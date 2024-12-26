@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.bookxml.MainActivity
-import com.example.bookxml.R
+import androidx.fragment.app.activityViewModels
 
 class BookDetailFragment : Fragment() {
+    private val viewModel: BookViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,18 +22,18 @@ class BookDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val book = (activity as? MainActivity)?.getCurrentBook()
 
-        book?.let {
-            view.findViewById<TextView>(R.id.titleText).text = it.title
-            view.findViewById<TextView>(R.id.authorText).text = it.author
-            view.findViewById<TextView>(R.id.descriptionText).text = it.description
+        viewModel.currentBook.observe(viewLifecycleOwner) { book ->
+            book?.let {
+                view.findViewById<TextView>(R.id.titleText).text = it.title
+                view.findViewById<TextView>(R.id.authorText).text = it.author
+                view.findViewById<TextView>(R.id.descriptionText).text = it.description
+            }
         }
 
         view.findViewById<Button>(R.id.editButton).setOnClickListener {
-            val editFragment = BookEditFragment()
             parentFragmentManager.beginTransaction()
-                .replace(R.id.container, editFragment)
+                .replace(R.id.container, BookEditFragment())
                 .addToBackStack(null)
                 .commit()
         }

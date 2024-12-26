@@ -1,11 +1,11 @@
 package com.example.bookxml
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 
-
 class MainActivity : AppCompatActivity(), BookListFragment.OnBookSelectedListener {
-    private var currentBook: Book? = null
+    private val viewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,17 +19,10 @@ class MainActivity : AppCompatActivity(), BookListFragment.OnBookSelectedListene
     }
 
     override fun onBookSelected(book: Book) {
-        currentBook = book
-        val detailFragment = BookDetailFragment()
+        viewModel.selectBook(book)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, detailFragment)
+            .replace(R.id.container, BookDetailFragment())
             .addToBackStack(null)
             .commit()
-    }
-
-    fun getCurrentBook(): Book? = currentBook
-
-    fun updateBook(book: Book) {
-        currentBook = book
     }
 }

@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.widget.TextView
 
 class BookListFragment : Fragment() {
     interface OnBookSelectedListener {
@@ -18,10 +19,7 @@ class BookListFragment : Fragment() {
     }
 
     private var listener: OnBookSelectedListener? = null
-    private val books = mutableListOf(
-        Book("1984", "Джордж Оруэлл", "Антиутопический роман..."),
-        Book("Мастер и Маргарита", "Михаил Булгаков", "Роман о дьяволе...")
-    )
+    private val viewModel: BookViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,18 +37,19 @@ class BookListFragment : Fragment() {
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val adapter = BookAdapter(books) { book ->
-            listener?.onBookSelected(book)
-        }
-        recyclerView.adapter = adapter
+        viewModel.books.observe(viewLifecycleOwner) { books ->
+            val adapter = BookAdapter(books) { book ->
+                listener?.onBookSelected(book)
+            }
+            recyclerView.adapter = adapter
 
-        // Показываем emptyView, если список пуст
-        if (books.isEmpty()) {
-            recyclerView.visibility = GONE
-            emptyView.visibility = VISIBLE
-        } else {
-            recyclerView.visibility = VISIBLE
-            emptyView.visibility = GONE
+            if (books.isEmpty()) {
+                recyclerView.visibility = GONE
+                emptyView.visibility = VISIBLE
+            } else {
+                recyclerView.visibility = VISIBLE
+                emptyView.visibility = GONE
+            }
         }
     }
 
